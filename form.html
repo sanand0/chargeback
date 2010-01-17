@@ -1,0 +1,276 @@
+<!doctype html>
+<html><head><title>Chargeback: New</title>
+<link rel="stylesheet" href="chargeback.css">
+<script src="common.js"></script>
+<script src="chargeback.js"></script>
+
+</head><body>
+<div class="headerbar blackbar">
+    <div class="container_12">
+        <div class="grid_12">
+            <a class="view_link"><h1 class="logo">Chargeback</h1></a>
+            <div class="caption">
+                <a class="button view_link"><span>View data</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form class="container_12 form">
+    <fieldset class="grid_7">
+      <table>
+        <tr><td colspan="3"><h2>Chargeback information</h2></td></tr>
+        <tr><td>Business</td><td>
+            <select name="dept" id="dept" class="required">
+                <option value="Direct" selected="selected">Direct</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Entertainment">Entertainment</option>
+            </select>
+        </td><td></td></tr>
+        <tr><td>Bank</td><td>
+            <select name="bank" id="bank" class="required">
+                <option value="Amex" selected="selected">Amex</option>
+                <option value="HSBC">HSBC</option>
+                <option value="RBS">RBS</option>
+            </select>
+        </td><td></td></tr>
+        <tr><td>Chargeback type</td><td>
+            <select name="type" id="type" class="required">
+                <option value="RFI" selected="selected">RFI</option>
+                <option value="CB">Chargeback</option>
+                <option value="BRF">Bank fraud</option>
+            </select>
+        </td><td></td></tr>
+        <tr><td>Case ref #</td><td>
+            <input name="caseref" id="caseref" class="required">
+            </td><td><ul id="matchref"></ul>
+        </td></tr>
+        <tr><td title="Only the last 4 digits of the card number will be stored, for PCI compliance purposes. This is usually enough to identify the order.">
+            Card (last 4 digits)
+            </td><td><input type="number" name="card" id="card" class="required" maxlength="4">
+            </td><td rowspan="3"><ul id="matchcard"></ul>
+        </td></tr>
+        <tr><td title="The amount the chargeback is for. This is often the full order value. But in case the dispute is about a part of an order, can be less than the order value.">
+            Chargeback amount
+            </td><td><input type="number" name="amt" id="amt" class="required">&#163;</td></tr>
+        <tr><td title="The date on which the chargeback was processed by the bank.">
+            Case date
+            </td><td><input type="date" name="on" id="on" class="required"></td></tr>
+        <tr><td>Respond by</td><td colspan="2"><input type="date" name="sla" id="sla"></td></tr>
+        <tr><td>Bank ref #</td><td colspan="2"><input name="bankref" id="bankref"></td></tr>
+        <tr><td>Debit / Credit</td><td colspan="2">
+            <select name="debit_credit" id="debit_credit" class="required">
+                <option value="Credit" selected="selected">Credit</option>
+                <option value="Debit">Debit</option>
+            </select>
+        </td></tr>
+        <tr><td>Order number</td><td colspan="2"><input name="order" id="order"></td></tr>
+        <tr><td>Order value</td><td colspan="2"><input name="value" id="value">&#163;</td></tr>
+        <tr><td>Seller ID</td><td colspan="2"><input name="seller" id="seller"></td></tr>
+        <tr><td colspan="3">
+            <button type="submit">Save</button>
+            <div id="validation_error">The fields marked in red must be filled in.</div>
+            <div id="server_error"><p>Something went wrong with the server.</p><p>Tell technical support what you did, and that the server said: <span class="message"></span></p></div>
+            <div id="server_success">Saved with ID <span class="message"></span>.<br>You can continue editing this form, or<br><a href="">Start another chargeback</a><br><a href="view.html?orderby=-time">View the latest records</a></div>
+        </td></tr>
+      </table>
+    </fieldset>
+
+    <fieldset class="grid_5">
+      <table>
+        <td colspan="2"><h2>Status</h2></td>
+        <tr><td>Status</td><td>
+            <select name="status" id="status" class="required">
+                <option value="Open" selected="selected">Open</option>
+                <option value="Awaited">Awaited</option>
+                <option value="Success">Success</option>
+                <option value="Failure">Failure</option>
+            </select>
+        </td></tr>
+        <tr><td>DASH</td><td>
+            <select name="dash" id="dash">
+                <option value=""></option>
+                <option value="done">Done</option>
+            </select>
+        </td></tr>
+        <tr><td>Refund</td><td>
+            <select name="refund" id="refund">
+                <option value=""></option>
+                <option value="done">Done</option>
+            </select>
+        </td></tr>
+        <tr><td>POD</td><td>
+            <select name="pod" id="pod">
+                <option value=""></option>
+                <option value="done">Done</option>
+            </select>
+        </td></tr>
+        <tr><td>Covering letter</td><td>
+            <select name="cover" id="cover">
+                <option value=""></option>
+                <option value="done">Done</option>
+            </select>
+        </td></tr>
+        <tr><td>Your user ID</td><td><input name="user" id="user" class="required"></td></tr>
+        <tr><td colspan="2">
+            Notes
+            <textarea name="notes" id="notes" rows="5"></textarea>
+        </td></tr>
+        <tr><td colspan="2">
+            <button type="submit">Save</button>
+        </td></tr>
+      </table>
+    </fieldset>
+
+    <div class="grid_12 hist">
+    </div>
+
+</form>
+<form><input type="hidden" name="id" id="id"></input></form>
+
+<script type="text/javascript">//<![CDATA[
+// Validation and recommendation logic
+function validate() {
+    for (var req = $('input.required,select.required'), l=req.length, i=0; i<l; i++) {
+        if (!req.eq(i).val()) { return false; }
+    }
+    return true;
+}
+
+$.fn.getFields = function() {
+    for (var i=0, f=this.serializeArray(), x, out = {}; x=f[i]; i++) {
+        out[x.name] = x.value;
+    }
+    return out;
+}
+
+function show_hist(hist) {
+    var html = [];
+    for (var i=0, h; h=hist[i]; i++) {
+        html.push('<p>', h[0][0], ' (', new Date(h[0][1]).toLocaleString(), ')</p><ul>');
+        for (var j=1, c; c=h[j]; j++) {
+            html.push('<li>', c[0], ': <ins>', c[1], '</ins> <del>', c[2], '</del></li>');
+        }
+        if (j == 1) { html.push('<li>Created</li>'); }
+        html.push('</ul>');
+    }
+    $('.hist').html(html.join(''));
+}
+
+function matchref() {
+    $('#matchref').html('');
+    $('#server_error').hide();
+    var data = fields2data($('.form').getFields()),
+        id = $('#id').val();
+    if (data.caseref) {
+        $.ajax({type: 'GET', url: '/Chargeback/?caseref="' + data.caseref + '"' + (id ? '&id!=' + $('#id').val() : ''), dataType: 'json', success: function(data) {
+            for (var i=0, d; d=data[i]; i++) {
+                var f = data2fields(d);
+                $('#matchref').append(['<li><a tabindex="-1" href="/form.html?id=', d.id, '">', f.bank, ' ', f.type, ' for &#163;', f.amt, ' on ', f.on, '</a></li>'].join(''));
+            }
+        }, error: function(xhr) {
+            $('#server_error .message').html(xhr.responseText);
+            $('#server_error').slideDown(200);
+        }});
+    }
+}
+
+function matchcard() {
+    $('#matchcard').html('');
+    $('#server_error').hide();
+    var data = fields2data($('.form').getFields()),
+        id = $('#id').val(),
+        onrange = 86400000 * 2,
+        amtrange = 100;
+    if (data.card && data.amt && data.on) {
+        $.ajax({type: 'GET', url: '/Chargeback/?card="' + data.card + '"&amt>' + (data.amt-amtrange) + '&amt<' + (data.amt+amtrange) + '&on>' + (data.on-onrange) + '&on<' + (data.on+onrange) + (id ? '&id!=' + $('#id').val() : ''), dataType: 'json', success: function(data) {
+            for (var i=0, d; d=data[i]; i++) {
+                var f = data2fields(d);
+                $('#matchcard').append(['<li><a tabindex="-1" href="/form.html?id=', d.id, '">', f.bank, ' ', f.type, ' for &#163;', f.amt, ' on ', f.on, '</a></li>'].join(''));
+            }
+        }, error: function(xhr) {
+            $('#server_error .message').html(xhr.responseText);
+            $('#server_error').slideDown(200);
+        }});
+    }
+}
+
+// Focus change logic
+$('td input, td select').focus(function() { $(this).parents('tr:first').addClass('highlight');    })
+                        .blur (function() { $(this).parents('tr:first').removeClass('highlight'); })
+                        .change(validate);
+
+// Form submission logic
+$('form').submit(function() {
+    // Validate
+    $('#validation_error,#server_error,#server_success').hide();
+    if (!validate()) { $('#validation_error').slideDown(200); return false; }
+    // Compute
+    var now = (new Date()).getTime(),
+        olddata = $('.form').data('originaldata'),
+        fields = $('.form').getFields(),
+        data = fields2data(fields),
+        changes = [ [$('#user').val(), now] ];
+    if (olddata) {
+        var oldfields = data2fields(olddata);
+        for (var field in oldfields) {
+            if (fields[field] && fields[field] !== oldfields[field]) {
+                changes.push([field, fields[field], oldfields[field]]);
+            }
+        }
+        if (changes.length == 1) { return false; }
+        data.hist = olddata.hist;
+    }
+    else { data.hist = []; }
+    data.hist.push(changes);
+    data.time = now;
+    data.user = $('#user').val();
+
+    $.ajax({type:'POST', url: '/Chargeback/' + $('#id').val(), dataType: 'json', data: JSON.stringify(data), success: function(data) {
+        $('#server_success .message').text(data.id);
+        $('#id').val(data.id);
+        $('#server_success').slideDown(200);
+        $('.form').data('originaldata', data);
+        show_hist(data.hist);
+    }, error: function(xhr) {
+        $('#server_error .message').html(xhr.responseText);
+        $('#server_error').slideDown(200);
+    }});
+    return false;
+});
+
+// Initialise the form if an ID is provided
+if ($.query.get('id')) {
+    $.ajax({type: 'GET', url: '/Chargeback/' + $.query.get('id'), dataType: 'json', success: function(data) {
+        var fields = data2fields(data);
+        $('.form').data('originaldata', data);
+        $('#id').val(data.id);
+        for (var key in fields) { $('#' + key).val(fields[key]); }
+        show_hist(fields.hist);
+        validate();
+        inituser('#user');
+        matchcard();
+        matchref();
+    }});
+} else {
+    validate();
+    inituser('#user');
+}
+
+
+// Datepicker initialisation
+$('input[type=date]').datePicker({startDate:'2000-01-01'});
+$('#on').bind('dateSelected', function(e, d) { $('#sla').val(d.addDays(14).asString()); }).dpSetSelected((new Date()).asString());
+$('.dp-choose-date').attr('tabIndex', -1);
+
+// Focus changes
+$('input,select').eq(0).focus();
+$('#caseref').change(matchref);
+$('#card,#amt,#on').change(matchcard);
+
+$('.view_link').attr('href', 'view.html?orderby=-time');
+$('#amt').change(function() { $('#value').val($('#value').val() || $(this).val()); });
+
+//]]></script>
+
+</body></html>
