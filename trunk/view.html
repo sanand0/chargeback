@@ -1,0 +1,130 @@
+<!doctype html>
+<html><head><title>Chargeback: View data</title>
+<link rel="stylesheet" href="chargeback.css">
+<script src="common.js"></script>
+<script src="chargeback.js"></script>
+</head><body>
+<div class="headerbar blackbar">
+    <div class="container_12">
+        <div class="grid_12">
+            <a href="view.html?orderby=-time" class="view_link"><h1 class="logo">Chargeback</h1></a>
+            <div class="caption">
+                <a class="button" href="form.html"><span>New chargeback</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container_12">
+    <div class="help">
+        You can search by typing in the boxes below and clicking the "Filter" button.
+        <br>You can search for amounts less than 200 by typing &quot;&lt;200&quot; in the Amount column filter.
+        <br>You can sort by clicking on the column headings. Click again to sort in the opposite direction.
+        <br>This page shows only the first 200 results. Click the "Export to Excel" button at the bottom to get the full list.
+    </div>
+    <div class="grid_12 view"><img src="loading-big.gif" alt="Loading..."></div>
+    <div class="grid_12">
+        <div id="server_error"><p>Something went wrong with the server.</p><p>Tell technical support what you did, and that the server said: <span class="message"></span></p></div>
+        <div class="actions"><a class="button export" href=""><span>Export to Excel</span></a></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+Date.format = 'yyyy-mm-dd';
+
+// Convert the URL into a JSONPath query
+function _str(key)  { var v = $.query.keys[key]; return (v && v !== true) ? '[?' + key + '="' + v + '"]' : ''; }
+function _sort(key) { var v = $.query.keys[key] || '-time'; return (v && v !== true) ? (v.substr(0,1) == '-' ? '[%5C' + v.substr(1) : '[/' + v) + ']' : ''; }
+function _num(key)  { var v = $.query.keys[key]; return (typeof v == 'number') ? '[?' + key + '=' + v + ']' :
+                                                        (typeof v == 'string') ? '[?' + key + v + ']' : ''; }
+var query = [ _str('caseref'), _str('type'), _str('sla'), _str('bank'), _str('card'), _str('status'), _str('on'), _num('amt')].join('');
+
+// Run the query and display results
+$.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'json', success: function(data) {
+    var html = ['<form action="/view.html" method="get"><table><tr>',
+        '<th orderby="status">Status</th>',
+        '<th orderby="bank">Bank</th>',
+        '<th orderby="type">Type</th>',
+        '<th orderby="caseref">Case ref</th>',
+        '<th orderby="sla">Respond by</th>',
+        '<th orderby="card">Card number</th>',
+        '<th orderby="on">Order date</th>',
+        '<th orderby="amt">Amount</th>',
+        '</tr><tr>',
+        '<td><input name="status" id="status"></td>',
+        '<td><input name="bank" id="bank"></td>',
+        '<td><input name="type" id="type"></td>',
+        '<td><input name="caseref" id="caseref"></td>',
+        '<td><input name="sla" id="sla"></td>',
+        '<td><input name="card" id="card"></td>',
+        '<td><input name="on" id="on"></td>',
+        '<td><input name="amt" id="amt"><input type="hidden" name="orderby" id="orderby"></input><button type="submit">Filter</button></td><td><a class="help_link" href="#">Help</a></td></tr>'
+        ];
+    for (var i=0, row; row=data[i]; i++) {
+        var f = data2fields(row);
+        html.push('<tr data="', row.id, '"><td>',
+            f.status, '</td><td>', 
+            f.bank, '</td><td>',
+            f.type, '</td><td>', 
+            f.caseref, '</td><td>',
+            f.sla, '</td><td>', 
+            f.card, '</td><td>', 
+            f.on, '</td><td>', 
+            f.amt, '</td><td>',
+            '<a class="delete" title="delete" href="/Chargeback/', row.id, '">x</a></td></tr>')
+    }
+    html.push('</table></form>');
+    $('.view').html(html.join(''));
+    
+    // Convert the rows / titles into links
+    $('.view tr[data], .view th[orderby]').hover(function() { $(this).addClass('highlight'); }, function() { $(this).removeClass('highlight'); });
+    $('.view tr[data]').click(function() { window.location = '/form.html?id=' + $(this).attr('data'); });
+    
+    // Delete a row
+    $('.delete').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var target = $(e.target).html('<img src="loading-big.gif">');
+        target.parents('tr').eq(0).addClass('deleting');
+        $.ajax({
+            type: 'delete',
+            url: target.attr('href'),
+            success: function() { target.parents('tr').eq(0).hide(); },
+            error: function(xhr) { target.parents('td').html('<span class="delete_error">Error: ' + xhr.responseText + '</span>'); }
+        });
+    });
+    
+    // Show the filter parameters
+    for (var key in $.query.keys) {
+        if (typeof $.query.keys[key] != 'boolean') {
+            $('#' + key).val($.query.keys[key]).addClass('filtered');
+        }
+    }
+    if ($.query.keys['orderby']) {
+        var orderby = $.query.keys['orderby'], reverse = '';
+        if (typeof orderby == 'string' && orderby.substr(0,1) == '-') { reverse = ' reverse'; orderby = orderby.substr(1); }
+        $('th[orderby=' + orderby + ']').addClass('sorted' + reverse)
+    }
+    // $('.export').attr('href', '/csv/Chargeback/' + query);
+    $('.export').click(function(e) { alert("not yet implemented"); return false; });
+    
+    // Clicking on title sorts
+    $('.view th[orderby]').click(function() {
+        var orderby = $(this).attr('orderby');
+        // Toggle the '-' in front to reverse the sort order, if required
+        if ($('#orderby').val() == orderby) {
+            if (orderby.substr(0,1) == '-') { orderby = orderby.substr(1); }
+            else { orderby = '-' + orderby; }
+        }
+        $('#orderby').val(orderby);
+        $('form').submit();
+    });
+}, error: function(xhr) {
+    $('.view,.actions').hide();
+    $('#server_error .message').html('DATABASE: Chargeback. ' + (xhr.responseText || '(no response text)'));
+    $('#server_error').slideDown(200);
+}});
+$('.help_link').live('click', function(e) { e.preventDefault(); $('.help').slideToggle(100); });
+</script>
+
+</body></html>
