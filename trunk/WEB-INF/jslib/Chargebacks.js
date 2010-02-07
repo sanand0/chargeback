@@ -39,9 +39,31 @@ app = function(env){
             body: '<a href="/form.html">Chargeback form</a>'
         };
     }
+    
+    // Shutdown function
+    else if (url == '/shutdown-chargeback') {
+        setTimeout(function() { java.lang.System.exit(0); });
+        return {
+            status: 200,
+            body: '<h1>Shutting down...</h1>'
+        };
+    }
 
     // else redirect to a previous handler, if it existed
     else if (typeof oldApp == 'function') {
         return oldApp(env);
     }
 };
+
+// Standard Rhino execute function
+// http://vision-media.ca/resources/javascript/rhino-java-system-exec-function
+exec = function (cmd) {
+  var lines = [], line;
+  with (JavaImporter(java.lang, java.io)) {
+    var process = Runtime.getRuntime().exec(cmd);
+    var stream = new DataInputStream(process.getInputStream());
+    while (line = stream.readLine()) { lines.push(line); }
+    stream.close();
+  }
+  return lines;
+}
