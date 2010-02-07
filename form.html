@@ -60,8 +60,8 @@
         <tr><td>Bank ref #</td><td colspan="2"><input name="bankref" id="bankref"></td></tr>
         <tr><td>Debit / Credit</td><td colspan="2">
             <select name="debit_credit" id="debit_credit" class="required">
-                <option value="Credit" selected="selected">Credit</option>
-                <option value="Debit">Debit</option>
+                <option value="Debit" selected="selected">Debit</option>
+                <option value="Credit">Credit</option>
             </select>
         </td></tr>
         <tr><td>Order number</td><td colspan="2"><input name="order" id="order"></td></tr>
@@ -128,13 +128,17 @@
 </form>
 <form><input type="hidden" name="id" id="id"></input></form>
 
-<script type="text/javascript">//<![CDATA[
+<script type="text/javascript">
 // Validation and recommendation logic
-function validate() {
+function isvalid() {
     for (var req = $('input.required,select.required'), l=req.length, i=0; i<l; i++) {
         if (!req.eq(i).val()) { return false; }
     }
     return true;
+}
+function showvalidation(isvalid) {
+    $('#validation_error,#server_error,#server_success').hide();
+    if (!isvalid) { $('#validation_error').slideDown(200); }
 }
 
 $.fn.getFields = function() {
@@ -198,13 +202,14 @@ function matchcard() {
 // Focus change logic
 $('td input, td select').focus(function() { $(this).parents('tr:first').addClass('highlight');    })
                         .blur (function() { $(this).parents('tr:first').removeClass('highlight'); })
-                        .change(validate);
+                        .change(function() { showvalidation(isvalid); });
 
 // Form submission logic
 $('form').submit(function() {
     // Validate
-    $('#validation_error,#server_error,#server_success').hide();
-    if (!validate()) { $('#validation_error').slideDown(200); return false; }
+    var v = isvalid();
+    showvalidation(isvalid);
+    if (!v) { return false; }
     // Compute
     var now = (new Date()).getTime(),
         olddata = $('.form').data('originaldata'),
@@ -247,19 +252,19 @@ if ($.query.get('id')) {
         $('#id').val(data.id);
         for (var key in fields) { $('#' + key).val(fields[key]); }
         show_hist(fields.hist);
-        validate();
+        showvalidation(isvalid());
         inituser('#user');
         matchcard();
         matchref();
     }});
 } else {
-    validate();
+    showvalidation(isvalid());
     inituser('#user');
 }
 
 
 // Datepicker initialisation
-$('input[type=date]').datePicker({startDate:'2000-01-01'});
+$('#on,#sla').datePicker({startDate:'2000-01-01'}); // input[type=date] doesn't work in IE6/7
 $('#on').bind('dateSelected', function(e, d) { $('#sla').val(d.addDays(14).asString()); }).dpSetSelected((new Date()).asString());
 $('.dp-choose-date').attr('tabIndex', -1);
 
@@ -271,6 +276,14 @@ $('#card,#amt,#on').change(matchcard);
 $('.view_link').attr('href', 'view.html?orderby=-time');
 $('#amt').change(function() { $('#value').val($('#value').val() || $(this).val()); });
 
-//]]></script>
+</script>
 
 </body></html>
+
+<!--
+CHARGEBACK.UKROI.TESCO.ORG/order?filter-parameters returns a JSON-P data about orders
+    Run grep as a CGI script and JSON-ify the output
+    - grep requires (cygwin/bin/) grep.exe, cygiconv-2.dll, cygintl-8.dll, cygwin1.dll
+    - Google "Java System.exec"
+    - Split and parse
+-->
