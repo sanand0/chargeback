@@ -86,3 +86,8 @@ function data2fields(f) {
         'hist':     f.hist
     }
 }
+
+// Common onDOMReady()
+$(function() {
+    $('.view_link').attr('href', 'view.html?orderby=-time');
+});
