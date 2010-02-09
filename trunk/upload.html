@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><title>Chargeback: Order upload</title>
+<link rel="stylesheet" href="chargeback.css">
+<script src="common.js"></script>
+<script src="chargeback.js"></script>
+
+</head><body>
+<div class="headerbar blackbar">
+    <div class="container_12">
+        <div class="grid_12">
+            <a class="view_link"><h1 class="logo">Chargeback</h1></a>
+            <div class="caption">
+                <a class="button" href="form.html"><span>New chargeback</span></a>
+                <a class="button view_link"><span>View data</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form class="container_12 form" action="/order-upload" method="post" enctype="multipart/form-data">
+    <fieldset class="grid_7">
+        <p><label>Upload an order file: <input type="file" name="orderfile" /></label></p>
+        <p><span class="button"><button type="submit">Submit</button></span></p>
+        <h3>Note to users</h3>
+        <p>Upload a text file with the format:</p>
+        <pre>$orderreference$|$orderid$|$originalorderid$|$ordertotal$|$checkouttime...</pre>
+        <p>All files must have exactly the same format.</p>
+        <h3>Note to admins</h3>
+        <p>The order file is saved on the server under the chargeback/chargeback/order/order-*. They ought to be simple pipe-delimited text files. You may delete old files if required.</p>
+    </fieldset>
+</form>
+
+</body>
+</html>

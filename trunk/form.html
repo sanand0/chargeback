@@ -77,6 +77,7 @@
     </fieldset>
 
     <fieldset class="grid_5">
+      <div id="order_info"></div>
       <table>
         <td colspan="2"><h2>Status</h2></td>
         <tr><td>Status</td><td>
@@ -208,7 +209,7 @@ $('td input, td select').focus(function() { $(this).parents('tr:first').addClass
 $('form').submit(function() {
     // Validate
     var v = isvalid();
-    showvalidation(isvalid);
+    showvalidation(v);
     if (!v) { return false; }
     // Compute
     var now = (new Date()).getTime(),
@@ -258,10 +259,29 @@ if ($.query.get('id')) {
         matchref();
     }});
 } else {
-    showvalidation(isvalid());
     inituser('#user');
 }
 
+// Order lookup
+$('<a href="#">Check</a>').insertAfter('#order').click(function(e) {
+    e.preventDefault();
+    var order = $('#order').val();
+    $('#order_info').html('<h2>Search for order ' + order + ' <a class="close" href="#">x</a></h2>');
+    $.getJSON('/order?search=' + order, function(data) {
+        var html = [];
+        for (var i=0, row; row=data[i]; i++) {
+            html.push('<table>');
+            for (var key in row) {
+                html.push('<tr><td>', key, '</td><td>', row[key], '</td></tr>');
+            }
+            html.push('</table>');
+        }
+        $('#order_info').append(html.join(''));
+        $('#order_info table:odd').css('background-color', '#eef');
+    });
+});
+
+$('#order_info .close').live('click', function(e) { e.preventDefault(); $('#order_info').empty(); });
 
 // Datepicker initialisation
 $('#on,#sla').datePicker({startDate:'2000-01-01'}); // input[type=date] doesn't work in IE6/7
@@ -273,17 +293,8 @@ $('input,select').eq(0).focus();
 $('#caseref').change(matchref);
 $('#card,#amt,#on').change(matchcard);
 
-$('.view_link').attr('href', 'view.html?orderby=-time');
 $('#amt').change(function() { $('#value').val($('#value').val() || $(this).val()); });
 
 </script>
 
 </body></html>
-
-<!--
-CHARGEBACK.UKROI.TESCO.ORG/order?filter-parameters returns a JSON-P data about orders
-    Run grep as a CGI script and JSON-ify the output
-    - grep requires (cygwin/bin/) grep.exe, cygiconv-2.dll, cygintl-8.dll, cygwin1.dll
-    - Google "Java System.exec"
-    - Split and parse
--->
