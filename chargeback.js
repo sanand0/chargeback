@@ -39,18 +39,21 @@ function fields2data(f) {
         'type':     f.type || '',
         'caseref':  f.caseref || '',
         'bankref':  f.bankref || '',
-        'dc':       f.dc || '',
+        'debit_credit': f.debit_credit || '',
         'sla':      Date.fromString(f.sla).getTime() || now,
-        
+
         'order':    f.order || '',
+        'ref':      f.ref || '',
         'value':    Math.round(+(f.value || 0) * 100),
         'seller':   f.seller || '',
-        
+        'chargeseller': f.chargeseller || '',
+
         'status':   f.status || '',
         'dash':     f.dash || '',
         'refund':   f.refund || '',
         'pod':      f.pod || '',
         'cover':    f.cover || '',
+        'reason':   f.reason || '',
         'notes':    f.notes || '',
         'time':     f.time || now,
         'user':     f.user || '',
@@ -68,18 +71,21 @@ function data2fields(f) {
         'type':     (f.type||'')+'',
         'caseref':  (f.caseref||'')+'',
         'bankref':  (f.bankref||'')+'',
-        'dc':       (f.dc||'')+'',
+        'debit_credit': (f.debit_credit||'')+'',
         'sla':      (new Date(f.sla || 0)).asString(),
-        
+
         'order':    (f.order||'')+'',
+        'ref':      (f.ref||'')+'',
         'value':    ((f.value || 0) / 100)+'',
         'seller':   (f.seller||'')+'',
-        
+        'chargeseller': (f.chargeseller||'')+'',
+
         'status':   (f.status||'')+'',
         'dash':     (f.dash||'')+'',
         'refund':   (f.refund||'')+'',
         'pod':      (f.pod||'')+'',
         'cover':    (f.cover||'')+'',
+        'reason':   (f.reason||'')+'',
         'notes':    (f.notes||'')+'',
         'time':     (f.time||'')+'',
         'user':     (f.user||'')+'',

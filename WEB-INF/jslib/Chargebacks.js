@@ -13,23 +13,23 @@ var chargebacks_schema = {
     'sla':          { type: 'integer' },
 
     'order':        { type: 'string' },
+    'ref':          { type: 'string' },
     'value':        { type: 'integer' },
     'seller':       { type: 'string' },
+    'chargeseller': { type: 'string' },
 
     'status':       { type: 'string' },
     'dash':         { type: 'string' },
     'refund':       { type: 'string' },
     'pod':          { type: 'string' },
     'cover':        { type: 'string' },
+    'reason':       { type: 'string' },
     'notes':        { type: 'string' },
 
     'time':         { type: 'integer' },
     'user':         { type: 'string' },
     'hist':         { type: 'array' }
 };
-
-var CSV_Separator = '|';
-var CSV_Quote = /\$/g;
 
 // Code begins here
 
@@ -67,29 +67,20 @@ app = function(env){
         return { body: '<h1>Uploaded</h1><p>Go back to the <a href="/view.html?orderby=-time">view</a> or <a href="/form.html">create a new form</a></p>' };
     }
 
-    // /order?filter-parameters returns JSON order data
-    // grep requires (cygwin/bin/) grep.exe, cygiconv-2.dll, cygintl-8.dll, cygwin1.dll
+    // /order/id returns JSON order data
+    // requires (cygwin/bin/) grep.exe, cygiconv-2.dll, cygintl-8.dll, cygwin1.dll
     else if (url.match(/^\/order\??/)) {
-        var error = { 'Content-type': 'text/javascript', body: '{}' };
-
         // Get the search parameter from the request
-        var search = '3'; // TODO: request.get('search')
+        var search = env.QUERY_STRING.split('=')[1];
 
         // Ensure that it's alphanumeric, and search for matches in the orders
         if (search.match(/[^A-Za-z0-9]/)) { return error; }
         var MATCH_COUNT = 10;
-        var orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ' + search + ' order/order*');
+        var orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' "^' + search + '," order/order*');
 
-        // Ensure that at least one result
-        if (!orders.length) { return error; }
-
-        // Get the column headers
-        var header = exec('utils/head.exe -1 order/header')[0].replace(CSV_Quote, '').split(CSV_Separator);
-
-        // Convert result into JSON
+        // Convert result into array of arrays
         for (var result = [], i=0, order; order=orders[i]; i++) {
-            var fields = order.replace(CSV_Quote, '').split(CSV_Separator);
-            result.push(zip(header, fields));
+            result.push(order.split(','));
         }
 
         // Return the JSON result
@@ -98,13 +89,48 @@ app = function(env){
             body: JSON.stringify(result)
         };
     }
-};
+    
+    // /csv/
+    else if (url.match(/^\/csv\//)) {
+        var match = url.match(/^\/csv(\/.*)$/);
+        var result = load(match[1]),
+            out = ['Department,Card,Amount,Chargeback date,Bank,Card type,Case reference,Bank reference,Debit Credit,SLA,Order ID,Order Reference,Order value,Seller ID,Charge seller,Status,DASH,Refund,Proof of Delivery,Cover letter,Reason,Notes,Last updated,User ID'];
 
-// zip(['a','b','c'], [1,2,3]) --> { a:1, b:2, c:3 }
-zip = function(a,b) {
-    var dict = {};
-    for (var i=0, l=a.length; i<l; i++) { dict[a[i]] = b[i]; }
-    return dict;
+        for (var i=0, e; e=result[i]; i++) {
+            var row = [
+                CSV.escape(e.dept),
+                CSV.escape(e.card),
+                CSV.escape(e.amt),
+                CSV.escape(CSV.date(e.on)),
+                CSV.escape(e.bank),
+                CSV.escape(e.type),
+                CSV.escape(e.caseref),
+                CSV.escape(e.bankref),
+                CSV.escape(e.dc),
+                CSV.escape(CSV.date(e.sla)),
+                CSV.escape(e.order),
+                CSV.escape(e.ref),
+                CSV.escape(e.value),
+                CSV.escape(e.seller),
+                CSV.escape(e.chargeseller),
+                CSV.escape(e.status),
+                CSV.escape(e.dash),
+                CSV.escape(e.refund),
+                CSV.escape(e.pod),
+                CSV.escape(e.cover),
+                CSV.escape(e.reason),
+                CSV.escape(e.notes),
+                CSV.escape(CSV.date(e.time)),
+                CSV.escape(e.user)
+            ];
+            out.push(row.join(','));
+        }
+        return {
+            status: 200,
+            headers: {'Content-Type':'text/csv', 'Content-Disposition':'filename=chargeback.csv', 'Cache-Control':'max-age=0'},
+            body: out.join('\n')
+        };
+    }
 };
 
 // YYYY-MM-DD-hh-mm-ss
@@ -130,3 +156,13 @@ exec = function (cmd) {
   }
   return lines;
 };
+
+keys = function(o, match, nomatch) {
+    var k = [];
+    for (var i in o) { 
+        if (o.hasOwnProperty(i) && (match ? i.match(match) : 1) && (nomatch ? !i.match(nomatch) : 1)) { 
+            k.push(i);
+        }
+    }
+    return k;
+}

@@ -10,6 +10,7 @@
         <div class="grid_12">
             <a class="view_link"><h1 class="logo">Chargeback</h1></a>
             <div class="caption">
+                <a class="button" href="upload.html"><span>Upload orders</span></a>
                 <a class="button view_link"><span>View data</span></a>
             </div>
         </div>
@@ -17,7 +18,7 @@
 </div>
 
 <form class="container_12 form">
-    <fieldset class="grid_7">
+    <fieldset class="grid_6">
       <table>
         <tr><td colspan="3"><h2>Chargeback information</h2></td></tr>
         <tr><td>Business</td><td>
@@ -25,6 +26,7 @@
                 <option value="Direct" selected="selected">Direct</option>
                 <option value="Clothing">Clothing</option>
                 <option value="Entertainment">Entertainment</option>
+                <option value="Wine">Wine</option>
             </select>
         </td><td></td></tr>
         <tr><td>Bank</td><td>
@@ -64,9 +66,11 @@
                 <option value="Credit">Credit</option>
             </select>
         </td></tr>
-        <tr><td>Order number</td><td colspan="2"><input name="order" id="order"></td></tr>
+        <tr><td>Order ID</td><td colspan="2"><input name="order" id="order"></td></tr>
+        <tr><td>Order Ref</td><td colspan="2"><input name="ref" id="ref"></td></tr>
         <tr><td>Order value</td><td colspan="2"><input name="value" id="value">&#163;</td></tr>
         <tr><td>Seller ID</td><td colspan="2"><input name="seller" id="seller"></td></tr>
+        <tr><td>Charge seller?</td><td colspan="2"><input type="checkbox" checked="checked" name="chargeseller" id="chargeseller"></td></tr>
         <tr><td colspan="3">
             <button type="submit">Save</button>
             <div id="validation_error">The fields marked in red must be filled in.</div>
@@ -76,43 +80,91 @@
       </table>
     </fieldset>
 
-    <fieldset class="grid_5">
-      <div id="order_info"></div>
+    <fieldset class="grid_6">
       <table>
         <td colspan="2"><h2>Status</h2></td>
-        <tr><td>Status</td><td>
-            <select name="status" id="status" class="required">
-                <option value="Open" selected="selected">Open</option>
-                <option value="Awaited">Awaited</option>
-                <option value="Success">Success</option>
-                <option value="Failure">Failure</option>
+        <tr><td>Reason code</td><td>
+            <select name="reason" id="reason" class="required">
+                <option class="Open">Open</option>
+                <optgroup   label="Awaited">
+                    <option class="Awaited">Documents awaited</option>
+                </optgroup>
+                <optgroup   label="Sent">
+                    <option class="Sent">Evidence sent. Bank response awaited</option>
+                </optgroup>
+                <optgroup   label="Success">
+                    <option class="Success">Chargeback was prevented</option>
+                    <option class="Success">Awaiting credit</option>
+                    <option class="Success">Credit received</option>
+                </optgroup>
+                <optgroup   label="Failure">
+                    <option class="Failure">Evidence not received by bank</option>
+                    <option class="Failure">Unjustified debit</option>
+                    <option class="Failure">Awaiting debit</option>
+                    <option class="Failure">Cardholder's name doesn't match order invoice</option>
+                    <option class="Failure">Customer did not authorise transaction</option>
+                    <option class="Failure">AMEX - card not present</option>
+                    <option class="Failure">AMEX - Store collection with no card swipe</option>
+                    <option class="Failure">Justified debit</option>
+                    <option class="Failure">Paper letter debit received</option>
+                </optgroup>
+                <optgroup   label="Unrecognised">
+                    <option class="Unrecognised">Order ID unrecognised</option>
+                </optgroup>
+                <optgroup   label="Expired">
+                    <option class="Expired">No opportunity to challenge</option>
+                    <option class="Expired">Timed out - legal obligation</option>
+                    <option class="Expired">Insufficient time to respond</option>
+                </optgroup>
+                <optgroup   label="Ignored">
+                    <option class="Ignored">Item not collected</option>
+                    <option class="Ignored">Refused at door</option>
+                    <option class="Ignored">S&amp;R Action &amp; Refund not given</option>
+                    <option class="Ignored">Lost in transit</option>
+                </optgroup>
+                <optgroup   label="NoInfo">
+                    <option class="NoInfo">HDN failed to provide POD</option>
+                    <option class="NoInfo">Store failed to provide info</option>
+                    <option class="NoInfo">CEVA failed to provide POD</option>
+                    <option class="NoInfo">EXPERT failed to provide POD</option>
+                    <option class="NoInfo">Other courier failed to provide POD</option>
+                    <option class="NoInfo">HSC failed to provide info</option>
+                </optgroup>
+                <optgroup   label="LiabilityShift">
+                    <option class="LiabilityShift">AMEX liability shift</option>
+                </optgroup>
             </select>
+        </td></tr>
+        <tr><td>Status</td><td>
+            <input name="status" id="status" value="Open">
         </td></tr>
         <tr><td>DASH</td><td>
             <select name="dash" id="dash">
-                <option value=""></option>
+                <option value="pending">Pending</option>
                 <option value="done">Done</option>
             </select>
         </td></tr>
         <tr><td>Refund</td><td>
             <select name="refund" id="refund">
-                <option value=""></option>
-                <option value="done">Done</option>
+                <option value="na">n/a</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
             </select>
         </td></tr>
         <tr><td>POD</td><td>
             <select name="pod" id="pod">
-                <option value=""></option>
-                <option value="done">Done</option>
+                <option value="pending">Pending</option>
+                <option value="received">Received</option>
+                <option value="unavailable">Unavailable</option>
             </select>
         </td></tr>
         <tr><td>Covering letter</td><td>
             <select name="cover" id="cover">
-                <option value=""></option>
+                <option value="pending">Pending</option>
                 <option value="done">Done</option>
             </select>
         </td></tr>
-        <tr><td>Your user ID</td><td><input name="user" id="user" class="required"></td></tr>
+        <tr><td>User ID</td><td><input name="user" id="user" class="required"></td></tr>
         <tr><td colspan="2">
             Notes
             <textarea name="notes" id="notes" rows="5"></textarea>
@@ -200,10 +252,12 @@ function matchcard() {
     }
 }
 
-// Focus change logic
-$('td input, td select').focus(function() { $(this).parents('tr:first').addClass('highlight');    })
-                        .blur (function() { $(this).parents('tr:first').removeClass('highlight'); })
-                        .change(function() { showvalidation(isvalid); });
+// Focus change logic. Doesn't seem to work with IE6, so just exclude that
+if (!$.browser.msie || $.browser.version >= "7") {
+    $('td input, td select').focus(function() { $(this).parents('tr:first').addClass('highlight');    })
+                            .blur (function() { $(this).parents('tr:first').removeClass('highlight'); })
+                            .change(function() { showvalidation(isvalid); });
+}
 
 // Form submission logic
 $('form').submit(function() {
@@ -216,10 +270,11 @@ $('form').submit(function() {
         olddata = $('.form').data('originaldata'),
         fields = $('.form').getFields(),
         data = fields2data(fields),
-        changes = [ [$('#user').val(), now] ];
+        user = $('#user').data('current_user') || $('#user').val(),
+        changes = [ [user, now] ];
     if (olddata) {
         var oldfields = data2fields(olddata);
-        for (var field in oldfields) {
+        for (var field in fields) {
             if (fields[field] && fields[field] !== oldfields[field]) {
                 changes.push([field, fields[field], oldfields[field]]);
             }
@@ -230,7 +285,7 @@ $('form').submit(function() {
     else { data.hist = []; }
     data.hist.push(changes);
     data.time = now;
-    data.user = $('#user').val();
+    data.user = user;
 
     $.ajax({type:'POST', url: '/Chargeback/' + $('#id').val(), dataType: 'json', data: JSON.stringify(data), success: function(data) {
         $('#server_success .message').text(data.id);
@@ -263,25 +318,23 @@ if ($.query.get('id')) {
 }
 
 // Order lookup
-$('<a href="#">Check</a>').insertAfter('#order').click(function(e) {
+$('<a href="#">Find Ref</a>').insertAfter('#order').click(function(e) {
     e.preventDefault();
     var order = $('#order').val();
-    $('#order_info').html('<h2>Search for order ' + order + ' <a class="close" href="#">x</a></h2>');
     $.getJSON('/order?search=' + order, function(data) {
-        var html = [];
-        for (var i=0, row; row=data[i]; i++) {
-            html.push('<table>');
-            for (var key in row) {
-                html.push('<tr><td>', key, '</td><td>', row[key], '</td></tr>');
-            }
-            html.push('</table>');
-        }
-        $('#order_info').append(html.join(''));
-        $('#order_info table:odd').css('background-color', '#eef');
+        if (data.length > 0 && data[0][0] == order) { $('#ref').val(data[0][1]); $('#order_info').html('Found.'); }
+        else { $('#order_info').html('Not found'); }
     });
+}).after('<div id="order_info"></div>');
+
+// Status lookup
+$('#reason').change(function() {
+    $('#status').val($('#reason option:contains(' + $('#reason').val().replace("'", "\\'") + ')').attr('class'));
+});
+$('#status').focus(function() {
+    $('#dash').focus();
 });
 
-$('#order_info .close').live('click', function(e) { e.preventDefault(); $('#order_info').empty(); });
 
 // Datepicker initialisation
 $('#on,#sla').datePicker({startDate:'2000-01-01'}); // input[type=date] doesn't work in IE6/7
