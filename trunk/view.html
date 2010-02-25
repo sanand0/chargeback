@@ -9,6 +9,7 @@
         <div class="grid_12">
             <a href="view.html?orderby=-time" class="view_link"><h1 class="logo">Chargeback</h1></a>
             <div class="caption">
+                <a class="button" href="upload.html"><span>Upload orders</span></a>
                 <a class="button" href="form.html"><span>New chargeback</span></a>
             </div>
         </div>
@@ -27,7 +28,6 @@
         <div id="server_error"><p>Something went wrong with the server.</p><p>Tell technical support what you did, and that the server said: <span class="message"></span></p></div>
         <div class="actions">
             <a class="button export" href=""><span>Export to Excel</span></a>
-            <a class="button" href="upload.html"><span>Upload orders</span></a>
         </div>
     </div>
 </div>
@@ -37,10 +37,11 @@ Date.format = 'yyyy-mm-dd';
 
 // Convert the URL into a JSONPath query
 function _str(key)  { var v = $.query.keys[key]; return (v && v !== true) ? '[?' + key + '="' + v + '"]' : ''; }
+function _date(key) { var v = $.query.keys[key]; return (v && v !== true) ? '[?' + key + '>=' + Date.fromString(v).getTime() + ']' : ''; }
 function _sort(key) { var v = $.query.keys[key] || '-time'; return (v && v !== true) ? (v.substr(0,1) == '-' ? '[%5C' + v.substr(1) : '[/' + v) + ']' : ''; }
 function _num(key)  { var v = $.query.keys[key]; return (typeof v == 'number') ? '[?' + key + '=' + v + ']' :
                                                         (typeof v == 'string') ? '[?' + key + v + ']' : ''; }
-var query = [ _str('caseref'), _str('type'), _str('sla'), _str('bank'), _str('card'), _str('status'), _str('on'), _num('amt')].join('');
+var query = [ _str('caseref'), _str('type'), _date('sla'), _str('bank'), _str('card'), _str('status'), _str('order'), _date('on'), _num('amt'), _sort('orderby')].join('');
 
 // Run the query and display results
 $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'json', success: function(data) {
@@ -49,6 +50,7 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
         '<th orderby="bank">Bank</th>',
         '<th orderby="type">Type</th>',
         '<th orderby="caseref">Case ref</th>',
+        '<th orderby="order">Order</th>',
         '<th orderby="sla">Respond by</th>',
         '<th orderby="card">Card number</th>',
         '<th orderby="on">Order date</th>',
@@ -58,6 +60,7 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
         '<td><input name="bank" id="bank"></td>',
         '<td><input name="type" id="type"></td>',
         '<td><input name="caseref" id="caseref"></td>',
+        '<td><input name="order" id="order"></td>',
         '<td><input name="sla" id="sla"></td>',
         '<td><input name="card" id="card"></td>',
         '<td><input name="on" id="on"></td>',
@@ -70,6 +73,7 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
             f.bank, '</td><td>',
             f.type, '</td><td>', 
             f.caseref, '</td><td>',
+            f.order, '</td><td>',
             f.sla, '</td><td>', 
             f.card, '</td><td>', 
             f.on, '</td><td>', 
@@ -108,8 +112,7 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
         if (typeof orderby == 'string' && orderby.substr(0,1) == '-') { reverse = ' reverse'; orderby = orderby.substr(1); }
         $('th[orderby=' + orderby + ']').addClass('sorted' + reverse)
     }
-    // $('.export').attr('href', '/csv/Chargeback/' + query);
-    $('.export').click(function(e) { alert("not yet implemented"); return false; });
+    $('.export').attr('href', '/csv/Chargeback/' + query);
     
     // Clicking on title sorts
     $('.view th[orderby]').click(function() {

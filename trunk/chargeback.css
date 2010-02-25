@@ -45,8 +45,8 @@ input.error, select.error, textarea.error { background-color: #faa; }
 #server_success { background-color: #ccf; }
 q { color: #888; font-size:9px; line-spacing:1; display:none; }
 
-#order_info table { width: 360px; table-layout: fixed; }
-#order_info td { border: none; padding: 0; font: 10px Tahoma; }
+#order_info table { margin: 0; font-size: 90%; }
+#order_info td { border: none; padding: 0; text-align: center; }
 
 .view .highlight { cursor: pointer; }
 .view #id { width: 2em; }

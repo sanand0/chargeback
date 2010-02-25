@@ -22,9 +22,15 @@
         <p><label>Upload an order file: <input type="file" name="orderfile" /></label></p>
         <p><span class="button"><button type="submit">Submit</button></span></p>
         <h3>Note to users</h3>
-        <p>Upload a text file with the format:</p>
-        <pre>$orderreference$|$orderid$|$originalorderid$|$ordertotal$|$checkouttime...</pre>
-        <p>All files must have exactly the same format.</p>
+        <p>Upload a CSV file containing the Order ID and the Order reference, like this:</p>
+        <pre>orderid,orderreference
+26718659,26015985
+26709170,26006505
+26753279,26050568
+26709176,26006511
+...
+</pre>
+        <p>The first column must be the Order ID. The second column must be the Order Reference. They must not be quoted. They must be separated by commas. Nothing else matters.</p>
         <h3>Note to admins</h3>
         <p>The order file is saved on the server under the chargeback/chargeback/order/order-*. They ought to be simple pipe-delimited text files. You may delete old files if required.</p>
     </fieldset>
