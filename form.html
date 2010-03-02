@@ -163,6 +163,7 @@
                 <option value="pending">Pending</option>
                 <option value="done">Done</option>
             </select>
+            <a target="_blank" class="template_link" href="/template.html" id="cover_letter">Create one</a>
         </td></tr>
         <tr><td>User ID</td><td><input name="user" id="user" class="required"></td></tr>
         <tr><td colspan="2">
@@ -306,6 +307,7 @@ if ($.query.get('id')) {
         var fields = data2fields(data);
         $('.form').data('originaldata', data);
         $('#id').val(data.id);
+        $('.template_link').attr('href', '/template.html?id=' + data.id)
         for (var key in fields) { $('#' + key).val(fields[key]); }
         show_hist(fields.hist);
         showvalidation(isvalid());
