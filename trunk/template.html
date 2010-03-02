@@ -1,28 +1,53 @@
-﻿<!doctype html>
-<html><head><title>Chargeback: New</title>
-<link rel="stylesheet" href="chargeback.css">
-<script src="common.js"></script>
+<!doctype html><html><head><title>Chargeback: New</title><link rel="stylesheet" href="chargeback.css"><script src="common.js"></script><script src="chargeback.js"></script>
+<style>
+body { font: 16pt Garamond, sans-serif; line-height: 1.5; }
+u { text-decoration: none; color: #008; font-style: italic; }
+</style>
 </head><body>
 <div class="container_12"><div class="grid_12 template">
 
+
 <!-- Don't touch anything upto this -->
 
-<p>Dear <u id="bank"></u>,</p>
 
-<p>On <u id="date"></u>, you sent us a <u id="type"></u> for &#163;<u id="amt"></u>.</p>
+<br>
+<br>
+<br>
+<p>Dear <u class="bank"></u>,</p>
 
-<p>We would like to challenge this. Please find attached</p>
+<p><b>Sub: Chargeback case ref: <u class="caseref">caseref</u></b></p>
+
+<p>On <u class="on"></u>, you sent us a <u class="type">chargeback</u> for &#163;<u class="amt"></u>. Your bank reference number was: <u class="bankref">not provided</u>.</p>
+
+<p>We would like to challenge this. Please find attached the following information:</p>
+<ul>
+  <li>Screenshot from customer service application: <u class="dash">dash</u></li>
+  <li>Proof of refund provided: <u class="refund">refund</u></li>
+  <li>Proof of delivery: <u class="pod">pod</u></li>
+</ul>
+
+<p>Please ensure that this <u class="type">chargeback</u> is reversed.</p>
+
+<p>Thanks &amp; Regards,
+<br>Tesco.com</p>
+
+
 
 <!-- Don't touch anything after this -->
+
 
 </div></div>
 <script>
 $('.template u').each(function() { $(this).text( $(this).attr('id') ); });
 if ($.query.get('id')) {
-    $.ajax({type: 'GET', url: '/Chargebacks/' + $.query.get('id'), dataType: 'json', success: function(data) {
-        for (var key in data) { $('#' + key).text(data[key]); }
+    $.ajax({type: 'GET', url: '/Chargeback/' + $.query.get('id'), dataType: 'json', success: function(data) {
+        var fields = data2fields(data);
+        for (var key in fields) {
+            var val = fields[key];
+            if (val instanceof Date) { val = x.getDate() + '-' + (x.getMonth() + 1) + '-' + x.getFullYear(); }
+            $('.' + key).html(val);
+        }
     }});
 }
 </script>
-
 </body></html>

@@ -8,7 +8,7 @@ Run
     Edit the last two lines in CHARGEBACK.BAT to reflect the paths. E.g.:
         SET JAVA_HOME=C:\JRE
         D:\CHARGEBACK\PERSEVERE\BIN\PERSVR.BAT -p 82 -r D:\CHARGEBACK\CHARGEBACK
-    Run D:\CHARGEBACK\CHARGEBACK\CHARGEBACK.BAT. Visit localhost:81 to test.
+    Run D:\CHARGEBACK\CHARGEBACK\CHARGEBACK.BAT. Visit localhost:82 to test.
     Go to Start - Control Panel - Scheduled Tasks and add a new task.
     Select CHARGEBACK.BAT as the file to run.
     Select D:\CHARGEBACK\CHARGEBACK as the "Start in" folder (change as required).
@@ -26,6 +26,8 @@ Application overview
     The code is mostly client-side javascript, and is in:
         view.html               shows all the records
         form.html               creates or edits a record
+        upload.html             uploads order reference data
+        template.html           templates for covering letters to banks
         common.js               standard libraries -- jQuery + plugins
         chargeback.js           chargebacks-specific code
 
@@ -41,7 +43,5 @@ How does this interact with the Fraud Scorecard?
     It doesn't. It's completely independent of the Fraud Scorecard...
 
 How to stop the application?
-    Open Task Manager and kill java.exe.
-    HOWEVER, the Fraud Scorecard runs on Java as well.
-    I have no idea how to stop just the Chargeback application.
-    So, on the whole, it's best to plan to restart both.
+    Visit http://chargeback.ukroi.tesco.org/shutdown-chargeback
+    WARNING: This will immediately shut down the application!
