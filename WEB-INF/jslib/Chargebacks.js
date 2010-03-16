@@ -94,7 +94,7 @@ app = function(env){
     else if (url.match(/^\/csv\//)) {
         var match = url.match(/^\/csv(\/.*)$/);
         var result = load(match[1]),
-            out = ['Department,Card,Amount,Chargeback date,Bank,Card type,Case reference,Bank reference,Debit Credit,SLA,Order ID,Order Reference,Order value,Seller ID,Charge seller,Status,DASH,Refund,Proof of Delivery,Cover letter,Reason,Notes,Last updated,User ID'];
+            out = ['Department,Card,Amount,Chargeback date,Bank,Chargeback type,Case reference,Bank reference,Debit Credit,SLA,Order ID,Order Reference,Order value,Seller ID,Charge seller,Status,DASH,Refund,Proof of Delivery,Cover letter,Reason,Notes,Last updated,User ID'];
 
         for (var i=0, e; e=result[i]; i++) {
             var row = [
