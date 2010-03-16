@@ -1,4 +1,4 @@
-Install
+Install on LIV10SFM01V
     1. Install  Java Runtine Environment (JRE 1.5 or above).
        I'll assume it's at C:\JRE
     2. Unzip persevere.zip. I'll assume it's at D:\CHARGEBACK\PERSEVERE.
