@@ -25,6 +25,13 @@ function inituser(field) {
             .data('current_user', username)         // store it
             .val($(field).val() || username)        // display it if the form's just been created
             .attr('disabled', 'disabled');          // and user can't edit it any more
+    } else {
+        $('.main').html('<div style="margin: 50px; line-height: 2; font-size:160%"><h2>You must be logged in to create chargebacks.</h2><ol>' +
+            "<li>Make sure you're using Internet Explorer." +
+            "<li>Under Tools - Options - Security - Custom Level, make sure 'Initialize and script ActiveX controls not marked as safe for scripting' is set to Prompt" +
+            "<li>When asked 'An ActiveX control on this page... allow this interaction?', say 'Yes'" +
+            '</ol></div>'
+        );
     }
 }
 

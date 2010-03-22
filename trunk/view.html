@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<div class="container_12">
+<div class="container_12 main">
     <div class="help">
         You can search by typing in the boxes below and clicking the "Filter" button.
         <br>You can search for amounts less than 200 by typing &quot;&lt;200&quot; in the Amount column filter.
@@ -37,11 +37,12 @@ Date.format = 'yyyy-mm-dd';
 
 // Convert the URL into a JSONPath query
 function _str(key)  { var v = $.query.keys[key]; return (v && v !== true) ? '[?' + key + '="' + v + '"]' : ''; }
+function _amt(key)  { var v = $.query.keys[key]; return (v && v !== true) ? '[?' + key + '=' + v*100 + ']' : ''; }
 function _date(key) { var v = $.query.keys[key]; return (v && v !== true) ? '[?' + key + '>=' + Date.fromString(v).getTime() + ']' : ''; }
 function _sort(key) { var v = $.query.keys[key] || '-time'; return (v && v !== true) ? (v.substr(0,1) == '-' ? '[%5C' + v.substr(1) : '[/' + v) + ']' : ''; }
 function _num(key)  { var v = $.query.keys[key]; return (typeof v == 'number') ? '[?' + key + '=' + v + ']' :
                                                         (typeof v == 'string') ? '[?' + key + v + ']' : ''; }
-var query = [ _str('caseref'), _str('type'), _date('sla'), _str('bank'), _str('card'), _str('status'), _str('order'), _date('on'), _num('amt'), _sort('orderby')].join('');
+var query = [ _str('caseref'), _str('type'), _date('sla'), _str('bank'), _str('card'), _str('status'), _str('order'), _date('on'), _amt('amt'), _sort('orderby')].join('');
 
 // Run the query and display results
 $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'json', success: function(data) {
@@ -78,7 +79,8 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
             f.card, '</td><td>', 
             f.on, '</td><td>', 
             f.amt, '</td><td>',
-            '<a class="delete" title="delete" href="/Chargeback/', row.id, '">x</a></td></tr>')
+            // '<a class="delete" title="delete" href="/Chargeback/', row.id, '">x</a>',
+            '</td></tr>')
     }
     html.push('</table></form>');
     $('.view').html(html.join(''));
@@ -131,6 +133,7 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
     $('#server_error').slideDown(200);
 }});
 $('.help_link').live('click', function(e) { e.preventDefault(); $('.help').slideToggle(100); });
+inituser();
 </script>
 
 </body></html>
