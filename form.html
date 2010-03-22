@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<form class="container_12 form">
+<form class="container_12 form main">
     <fieldset class="grid_6">
       <table>
         <tr><td colspan="3"><h2>Chargeback information</h2></td></tr>
@@ -72,7 +72,7 @@
         <tr><td>Seller ID</td><td colspan="2"><input name="seller" id="seller"></td></tr>
         <tr><td>Charge seller?</td><td colspan="2"><input type="checkbox" checked="checked" name="chargeseller" id="chargeseller"></td></tr>
         <tr><td colspan="3">
-            <button type="submit">Save</button>
+            <span class="button"><button type="submit">Save</button></span>
             <div id="validation_error">The fields marked in red must be filled in.</div>
             <div id="server_error"><p>Something went wrong with the server.</p><p>Tell technical support what you did, and that the server said: <span class="message"></span></p></div>
             <div id="server_success">Saved with ID <span class="message"></span>.<br>You can continue editing this form, or<br><a href="">Start another chargeback</a><br><a href="view.html?orderby=-time">View the latest records</a></div>
@@ -82,7 +82,7 @@
 
     <fieldset class="grid_6">
       <table>
-        <td colspan="2"><h2>Status</h2></td>
+        <tr><td colspan="2"><h2>Status</h2></td></tr>
         <tr><td>Reason code</td><td>
             <select name="reason" id="reason" class="required">
                 <option class="Open">Open</option>
@@ -171,7 +171,8 @@
             <textarea name="notes" id="notes" rows="5"></textarea>
         </td></tr>
         <tr><td colspan="2">
-            <button type="submit">Save</button>
+            <span class="button"><button type="submit">Save</button></span>
+            <a target="_blank" class="button template_link" href="/template.html" id="cover_letter"><span>Template</span></a>
         </td></tr>
       </table>
     </fieldset>
@@ -180,7 +181,7 @@
     </div>
 
 </form>
-<form><input type="hidden" name="id" id="id"></input></form>
+<form><input type="hidden" name="id" id="id"></form>
 
 <script type="text/javascript">
 // Validation and recommendation logic

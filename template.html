@@ -1,36 +1,183 @@
 <!doctype html><html><head><title>Chargeback: New</title><link rel="stylesheet" href="chargeback.css"><script src="common.js"></script><script src="chargeback.js"></script>
 <style>
 body { font: 16pt Garamond, sans-serif; line-height: 1.5; }
-u { text-decoration: none; color: #008; font-style: italic; }
+.template u, .template input { text-decoration: none; color: #008; font-style: italic; }
+.template input { border: none; background-color: none; font-family: inherit; font-size: inherit; padding: 0; margin: 0; }
+.template input.long  { width: 7em; }
+.template input.short { width: 3.5em; }
+.template ul li { list-style-type: box; margin-left: 40px; }
+.summary { margin-top: 2em; }
+.summary td { border: none; }
+
+@media screen {
+    .template input { border: 1px dotted #ccc; background-color: #fcc; }
+}
 </style>
 </head><body>
-<div class="container_12"><div class="grid_12 template">
+<div class="container_12 main">
 
 
-<!-- Don't touch anything upto this -->
+<!-- AMEX template ------------------------------------------------------ -->
+
+<div class="Amex template">
+ <div class="grid_9">&nbsp;</div>
+ <div class="grid_3"><img src="tesco.jpg" width="200"></div>
+ <div class="grid_9">
+  AMEX Merchant Services
+  <br>AMEX House PO Box 72
+  <br>Edward Street
+  <br>Brighton BN88 1YR
+ </div>
+ <div class="grid_3">
+  Tesco Stores Limited
+  <br>No.1 Falcon Way
+  <br>Shire Park
+  <br>Welwyn Garden City
+  <br>AL7 1TW
+ </div>
+
+ <div class="clear">&nbsp;</div>
+
+ <div class="grid_12">
+  <table class="summary">
+   <tr><td>Case Reference   </td><td><u class="caseref">caseref</u></td></tr>
+   <tr><td>Case Date        </td><td><u class="on">on</u></td></tr>
+   <tr><td>Amount           </td><td>&#163; <u class="amt">amt</u></td></tr>
+   <tr><td>Responded Date   </td><td><u class="now">now</u></td></tr>
+  </table>
+
+  <p>Dear Sir / Madam,</p>
+
+  <p>Thank you for your letter dated <tr><td><u class="on">on</u> regarding an RFI. As required, please find included in this transmission the following documentation:</p>
+  <ul>
+   <li>Itemized Invoice copy
+   <li>Copy of refund to the customer
+  </ul>
+
+  <p>Please do not debit our account, as we have refunded this customer on <input class="long"> for &#163; <input class="short"></p>
+  <p>As this is within the 14 day deadline, we hope that this will enable you to defend the chargeback and therefore prevent a charge being made by the issuer.</p>
+
+  <p>Yours sincerely
+  <br>For and On behalf of
+  <br>Tesco Stores Ltd</p>
+
+  <p><b>Anitha Silvaster</b>
+  <br>Analyst
+  <br>HSC_Chargebacks@in.tesco.com</p>
+
+ </div>
+</div>
 
 
-<br>
-<br>
-<br>
-<p>Dear <u class="bank"></u>,</p>
 
-<p><b>Sub: Chargeback case ref: <u class="caseref">caseref</u></b></p>
 
-<p>On <u class="on"></u>, you sent us a <u class="type">chargeback</u> for &#163;<u class="amt"></u>. Your bank reference number was: <u class="bankref">not provided</u>.</p>
+<!-- HSBC template ------------------------------------------------------ -->
 
-<p>We would like to challenge this. Please find attached the following information:</p>
-<ul>
-  <li>Screenshot from customer service application: <u class="dash">dash</u></li>
-  <li>Proof of refund provided: <u class="refund">refund</u></li>
-  <li>Proof of delivery: <u class="pod">pod</u></li>
-</ul>
+<div class="HSBC template">
+ <div class="grid_9">&nbsp;</div>
+ <div class="grid_3"><img src="tesco.jpg" width="200"></div>
+ <div class="grid_9">
+  Pradeep Das
+  <br>Chargeback Processing Manager
+  <br>HSBC Merchant Services LLP
+  <br>51 De Montfort Street
+  <br>Leicester LE1 7BB
+ </div>
+ <div class="grid_3">
+  Tesco Stores Limited
+  <br>No.1 Falcon Way
+  <br>Shire Park
+  <br>Welwyn Garden City
+  <br>AL7 1TW
+ </div>
 
-<p>Please ensure that this <u class="type">chargeback</u> is reversed.</p>
+ <div class="clear">&nbsp;</div>
 
-<p>Thanks &amp; Regards,
-<br>Tesco.com</p>
+ <div class="grid_12">
+  <table class="summary">
+   <tr><td>Acquirer Reference  </td><td><u class="bankref">bankref</u></td></tr>
+   <tr><td>Case Reference      </td><td><u class="caseref">caseref</u></td></tr>
+   <tr><td>Case Date           </td><td><u class="on">on</u></td></tr>
+   <tr><td>Amount              </td><td>&#163; <u class="amt">amt</u></td></tr>
+   <tr><td>Number of documents </td><td><input class="short"> (including this page)</td></tr>
+   <tr><td>Responded Date      </td><td><u class="now">now</u></td></tr>
+  </table>
 
+  <p>Dear Sir / Madam,</p>
+
+  <p>Thank you for your letter dated <tr><td><u class="on">on</u> regarding a chargeback. As required, please find included in this transmission the following documentation:</p>
+  <ul>
+   <li>Proof of delivery from our courier
+   <li>Itemized Invoice copy
+  </ul>
+
+  <p>As this is within the 14 day deadline, we hope that this will enable you to defend the chargeback and therefore prevent a charge being made by the issuer.</p>
+
+  <p>Yours sincerely
+  <br>For and On behalf of
+  <br>Tesco Stores Ltd</p>
+
+  <p><b>Anitha Silvaster</b>
+  <br>Analyst
+  <br>HSC_Chargebacks@in.tesco.com</p>
+
+ </div>
+</div>
+
+
+<!-- RBS  template ------------------------------------------------------ -->
+
+<div class="RBS template">
+ <div class="grid_9">&nbsp;</div>
+ <div class="grid_3"><img src="tesco.jpg" width="200"></div>
+ <div class="grid_9">
+  Manager Chargebacks
+  <br>Address Card Centre
+  <br>PO Box 19
+  <br>Victory House
+  <br>5th Avenue
+  <br>Gateshead NE11 0YT 
+ </div>
+ <div class="grid_3">
+  Tesco Stores Limited
+  <br>No.1 Falcon Way
+  <br>Shire Park
+  <br>Welwyn Garden City
+  <br>AL7 1TW
+ </div>
+
+ <div class="clear">&nbsp;</div>
+
+ <div class="grid_12">
+  <table class="summary">
+   <tr><td>Acquirer Reference  </td><td><u class="bankref">bankref</u></td></tr>
+   <tr><td>Case Reference      </td><td><u class="caseref">caseref</u></td></tr>
+   <tr><td>Case Date           </td><td><u class="on">on</u></td></tr>
+   <tr><td>Amount              </td><td>&#163; <u class="amt">amt</u></td></tr>
+   <tr><td>Number of documents </td><td><input class="short"> (including this page)</td></tr>
+   <tr><td>Responded Date      </td><td><u class="now">now</u></td></tr>
+  </table>
+
+  <p>Dear Sir / Madam,</p>
+
+  <p>Thank you for your letter dated <tr><td><u class="on">on</u> regarding an RFI. As required, please find included in this transmission the following documentation:</p>
+  <ul>
+   <li>Proof of delivery from our courier
+   <li>Itemized Invoice copy
+  </ul>
+
+  <p>As this is within the 14 day deadline, we hope that this will enable you to defend the chargeback and therefore prevent a charge being made by the issuer.</p>
+
+  <p>Yours sincerely
+  <br>For and On behalf of
+  <br>Tesco Stores Ltd</p>
+
+  <p><b>Anitha Silvaster</b>
+  <br>Analyst
+  <br>HSC_Chargebacks@in.tesco.com</p>
+
+ </div>
+</div>
 
 
 <!-- Don't touch anything after this -->
@@ -38,15 +185,18 @@ u { text-decoration: none; color: #008; font-style: italic; }
 
 </div></div>
 <script>
-$('.template u').each(function() { $(this).text( $(this).attr('id') ); });
+$('.template').hide();
 if ($.query.get('id')) {
     $.ajax({type: 'GET', url: '/Chargeback/' + $.query.get('id'), dataType: 'json', success: function(data) {
         var fields = data2fields(data);
+        fields.now = new Date();
         for (var key in fields) {
             var val = fields[key];
-            if (val instanceof Date) { val = x.getDate() + '-' + (x.getMonth() + 1) + '-' + x.getFullYear(); }
-            $('.' + key).html(val);
+            if (val instanceof Date) { val = val.asString(); }
+            $('u.' + key).html('' + val);
         }
+        
+        $('.' + fields.bank).show();
     }});
 }
 </script>
