@@ -25,6 +25,7 @@ function inituser(field) {
             .data('current_user', username)         // store it
             .val($(field).val() || username)        // display it if the form's just been created
             .attr('disabled', 'disabled');          // and user can't edit it any more
+            return username;
     } else {
         $('.main').html('<div style="margin: 50px; line-height: 2; font-size:160%"><h2>You must be logged in to create chargebacks.</h2><ol>' +
             "<li>Make sure you're using Internet Explorer." +
@@ -47,7 +48,7 @@ function fields2data(f) {
         'caseref':  f.caseref || '',
         'bankref':  f.bankref || '',
         'debit_credit': f.debit_credit || '',
-        'sla':      Date.fromString(f.sla).getTime() || now,
+        'sla':      Date.fromString(f.sla).getTime() || (Date.fromString(f.on).getTime() || now) + 86400 * 14 * 1000,
 
         'order':    f.order || '',
         'ref':      f.ref || '',

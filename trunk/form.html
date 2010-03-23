@@ -10,7 +10,7 @@
         <div class="grid_12">
             <a class="view_link"><h1 class="logo">Chargeback</h1></a>
             <div class="caption">
-                <a class="button" href="upload.html"><span>Upload orders</span></a>
+                <a class="button" href="upload.html"><span>Upload</span></a>
                 <a class="button view_link"><span>View data</span></a>
             </div>
         </div>
@@ -40,6 +40,7 @@
             <select name="type" id="type" class="required">
                 <option value="RFI" selected="selected">RFI</option>
                 <option value="CB">Chargeback</option>
+                <option value="RFICB">RFI to CB</option>
                 <option value="BRF">Bank fraud</option>
             </select>
         </td><td></td></tr>
@@ -318,6 +319,7 @@ if ($.query.get('id')) {
     }});
 } else {
     inituser('#user');
+    $('.template_link').hide();
 }
 
 // Order lookup

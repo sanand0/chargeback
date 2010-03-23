@@ -9,7 +9,7 @@
         <div class="grid_12">
             <a href="view.html?orderby=-time" class="view_link"><h1 class="logo">Chargeback</h1></a>
             <div class="caption">
-                <a class="button" href="upload.html"><span>Upload orders</span></a>
+                <a class="button" href="upload.html"><span>Upload</span></a>
                 <a class="button" href="form.html"><span>New chargeback</span></a>
             </div>
         </div>
@@ -79,7 +79,7 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
             f.card, '</td><td>', 
             f.on, '</td><td>', 
             f.amt, '</td><td>',
-            // '<a class="delete" title="delete" href="/Chargeback/', row.id, '">x</a>',
+            '<a class="delete" title="delete" href="/Chargeback/', row.id, '">x</a>',
             '</td></tr>')
     }
     html.push('</table></form>');
@@ -101,7 +101,7 @@ $.ajax({type: 'GET', url: '/Chargeback/' + query + '.slice(0,200)', dataType: 'j
             success: function() { target.parents('tr').eq(0).hide(); },
             error: function(xhr) { target.parents('td').html('<span class="delete_error">Error: ' + xhr.responseText + '</span>'); }
         });
-    });
+    }).hide();
     
     // Show the filter parameters
     for (var key in $.query.keys) {
