@@ -29,17 +29,17 @@ textarea.csv { border: 1px inset #ccc; width: 458px; height: 200px; }
         <p><label>Upload an order file: <input type="file" name="orderfile" /></label></p>
         <p><span class="button"><button type="submit">Submit</button></span></p>
         <h3>Note to users</h3>
-        <p>Upload a CSV file containing the Order ID and the Order reference, like this:</p>
-        <pre>orderid,orderreference
-26718659,26015985
-26709170,26006505
-26753279,26050568
-26709176,26006511
+        <p>Upload a CSV file like this:</p>
+        <pre>orderreference,orderid,checkoutdate,orderamount
+632940,32644,27/4/2010 21:12:36,8.14
+657781,57413,27/4/2010 20:50:19,24.99
+663861,63458,27/4/2010 11:23:01,130.00
+739776,138850,27/4/2010 21:15:28,53.00
 ...
 </pre>
-        <p>The first column must be the Order ID. The second column must be the Order Reference. They must not be quoted. They must be separated by commas. Nothing else matters.</p>
+        <p>The column must be in the order specified, and in the format specified. (Excel exports CSV files this way.) They must be separated by commas. Column headings can be anything.</p>
         <h3>Note to admins</h3>
-        <p>The order file is saved on the server under the chargeback/chargeback/order/order-*. They ought to be simple pipe-delimited text files. You may delete old files if required.</p>
+        <p>The order file is saved on the server under the chargeback/chargeback/order/order-*. They ought to be simple comma-delimited text files. You may delete old files if required.</p>
     </fieldset>
   </form>
 

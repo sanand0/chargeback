@@ -51,10 +51,13 @@ function fields2data(f) {
         'sla':      Date.fromString(f.sla).getTime() || (Date.fromString(f.on).getTime() || now) + 86400 * 14 * 1000,
 
         'order':    f.order || '',
+        'ordered':  Date.fromString(f.ordered).getTime() || 0,
         'ref':      f.ref || '',
         'value':    Math.round(+(f.value || 0) * 100),
         'seller':   f.seller || '',
         'chargeseller': f.chargeseller || '',
+        'disputed': f.disputed || '',
+        'why':      f.why || '',
 
         'status':   f.status || '',
         'dash':     f.dash || '',
@@ -83,10 +86,13 @@ function data2fields(f) {
         'sla':      (new Date(f.sla || 0)).asString(),
 
         'order':    (f.order||'')+'',
+        'ordered':  f.ordered ? (new Date(f.ordered)).asString() : '',
         'ref':      (f.ref||'')+'',
         'value':    ((f.value || 0) / 100)+'',
         'seller':   (f.seller||'')+'',
         'chargeseller': (f.chargeseller||'')+'',
+        'disputed': (f.disputed||'')+'',
+        'why':      (f.why||'')+'',
 
         'status':   (f.status||'')+'',
         'dash':     (f.dash||'')+'',

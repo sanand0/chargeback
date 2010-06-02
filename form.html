@@ -24,6 +24,7 @@
         <tr><td>Business</td><td>
             <select name="dept" id="dept" class="required">
                 <option value="Direct" selected="selected">Direct</option>
+                <option value="Books">Books</option>
                 <option value="Clothing">Clothing</option>
                 <option value="Entertainment">Entertainment</option>
                 <option value="Wine">Wine</option>
@@ -68,16 +69,14 @@
             </select>
         </td></tr>
         <tr><td>Order ID</td><td colspan="2"><input name="order" id="order"></td></tr>
+        <tr><td title="The date on which the order was placed.">
+            Order date
+            </td><td><input type="date" name="ordered" id="ordered"></td></tr>
         <tr><td>Order Ref</td><td colspan="2"><input name="ref" id="ref"></td></tr>
         <tr><td>Order value</td><td colspan="2"><input name="value" id="value">&#163;</td></tr>
         <tr><td>Seller ID</td><td colspan="2"><input name="seller" id="seller"></td></tr>
         <tr><td>Charge seller?</td><td colspan="2"><input type="checkbox" checked="checked" name="chargeseller" id="chargeseller"></td></tr>
-        <tr><td colspan="3">
-            <span class="button"><button type="submit">Save</button></span>
-            <div id="validation_error">The fields marked in red must be filled in.</div>
-            <div id="server_error"><p>Something went wrong with the server.</p><p>Tell technical support what you did, and that the server said: <span class="message"></span></p></div>
-            <div id="server_success">Saved with ID <span class="message"></span>.<br>You can continue editing this form, or<br><a href="">Start another chargeback</a><br><a href="view.html?orderby=-time">View the latest records</a></div>
-        </td></tr>
+        <tr><td>Seller disputed?</td><td colspan="2"><input type="checkbox" name="disputed" id="disputed"></td></tr>
       </table>
     </fieldset>
 
@@ -164,19 +163,77 @@
                 <option value="pending">Pending</option>
                 <option value="done">Done</option>
             </select>
-            <a target="_blank" class="template_link" href="/template.html" id="cover_letter">Create one</a>
+            <a target="_blank" class="button template_link" href="/template.html" id="cover_letter"><span>Create</span></a>
         </td></tr>
         <tr><td>User ID</td><td><input name="user" id="user" class="required"></td></tr>
         <tr><td colspan="2">
             Notes
             <textarea name="notes" id="notes" rows="5"></textarea>
         </td></tr>
-        <tr><td colspan="2">
-            <span class="button"><button type="submit">Save</button></span>
-            <a target="_blank" class="button template_link" href="/template.html" id="cover_letter"><span>Template</span></a>
-        </td></tr>
       </table>
     </fieldset>
+
+    <div class="grid_12">
+        <table>
+        <tr><td>Bank reason code:</td>
+        <td><select name="why" id="why">
+            <option value="" selected="selected"></option>
+            <optgroup label="MasterCard">
+                <option value="M01">01. No Response received to Retrieval Request</option>
+                <option value="M02">02. Retrieval Request Response – Illegible or Missing Information</option>
+                <option value="M07">07. Hot Card File</option>
+                <option value="M08">08. Transaction not Authorised or Authorisation declined</option>
+                <option value="M12">12. Card number processed does not exist</option>
+                <option value="M31">31. Amount processed differs to that agreed by cardholder</option>
+                <option value="M34">34. Same transaction processed more than once</option>
+                <option value="M35">35. Expired card</option>
+                <option value="M37">37. Fraudulent transaction</option>
+                <option value="M40">40. Fraudulent transactions taken over a short space of time</option>
+                <option value="M41">41. Cardholder cancelled a Recurring Transaction</option>
+                <option value="M42">42. Transaction processed more than 6 days after transaction date</option>
+                <option value="M46">46. Cardholder charged in a different currency to that quoted</option>
+                <option value="M47">47. Transaction not authorised – Fraudulent transaction</option>
+                <option value="M49">49. Excessive Fraudulent Transactions – Advised by Fraud</option>
+                <option value="M50">50. Refund processed as a Sale</option>
+                <option value="M53">53. Cardholder received damaged or not as described goods</option>
+                <option value="M55">55. Ordered goods not received</option>
+                <option value="M57">57. Fraudulent card-activated telephone transaction</option>
+                <option value="M59">59. Services ordered by cardholder not received</option>
+                <option value="M60">60. Refund not processed to cardholder</option>
+                <option value="M62">62. Fraudulent transaction – counterfeit card</option>
+                <option value="M63">63. Cardholder does not recognise transaction</option>
+                <option value="M64">64. Correct chip card procedure not followed – Counterfeit card</option>
+                <option value="M70">70. Correct chip card procedure not followed – Lost/Stolen card</option>
+            </optgroup>
+            <optgroup label="Visa">
+                <option value="V30">30. Ordered goods not received</option>
+                <option value="V41">41. Cardholder cancelled a Recurring Transaction</option>
+                <option value="V53">53. Cardholder received damaged or not as described goods</option>
+                <option value="V57">57. Fraudulent transactions taken over a short space of time</option>
+                <option value="V60">60. Retrieval Request Response – Illegible or Missing Information</option>
+                <option value="V62">62. Fraudulent transaction – counterfeit card</option>
+                <option value="V70">70. Hot Card File</option>
+                <option value="V72">72. Transaction not Authorised or Authorisation declined</option>
+                <option value="V73">73. Expired card</option>
+                <option value="V74">74. Transaction processed more than 6 days after transaction date</option>
+                <option value="V75">75. Cardholder does not recognise transaction</option>
+                <option value="V76">76. Cardholder charged in a different currency to that quoted</option>
+                <option value="V77">77. Card number processed does not exist</option>
+                <option value="V80">80. Amount processed differs to that agreed by cardholder</option>
+                <option value="V81">81. Correct chip card procedure not followed – Lost/Stolen card</option>
+                <option value="V82">82. Same transaction processed more than once</option>
+                <option value="V85">85. Refund not processed to cardholder</option>
+                <option value="V93">93. Excessive Fraudulent Transactions – Advised by Fraud</option>
+            </optgroup>
+        </select></td></tr>
+        <tr><td colspan="2">
+            <span class="button"><button type="submit">Save</button></span>
+            <div id="validation_error">The fields marked in red must be filled in.</div>
+            <div id="server_error"><p>Something went wrong with the server.</p><p>Tell technical support what you did, and that the server said: <span class="message"></span></p></div>
+            <div id="server_success">Saved with ID <span class="message"></span>.<br>You can continue editing this form, or<br><a href="">Start another chargeback</a><br><a href="view.html?orderby=-time">View the latest records</a></div>
+        </td></tr>
+        </table>
+    </div>
 
     <div class="grid_12 hist">
     </div>
@@ -325,10 +382,25 @@ if ($.query.get('id')) {
 // Order lookup
 $('<a href="#">Find Ref</a>').insertAfter('#order').click(function(e) {
     e.preventDefault();
-    var order = $('#order').val();
-    $.getJSON('/order?search=' + order, function(data) {
-        if (data.length > 0 && data[0][0] == order) { $('#ref').val(data[0][1]); $('#order_info').html('Found.'); }
-        else { $('#order_info').html('Not found'); }
+    var input = fields2data($('.form').getFields()),
+        search = [input.order, input.ordered || '', input.amt || ''].join(',');
+    $.getJSON('/order?search=' + search, function(data) {
+        if (data.length == 1 && data[0][1] == input.order) {
+            $('#ref').val(data[0][0]);
+            // Assume format is Excel standard "d/m/yyyy hh:mm:ss"
+            var datestr = data[0][2].split(/[^0-9]/),
+                date = new Date(+datestr[2], +datestr[1]-1, +datestr[0]);
+            $('#ordered').val(date.asString());
+            $('#value').val(data[0][3]);
+            $('#order_info').html('Found.');
+        }
+        else if (data.length > 1) {
+            var s=['<table><tr><th>Ref</th><th>ID</th><th>Date</th><th>Amt</th></tr>'];
+            for (var i=0, d; d=data[i]; i++) {
+              s.push('<tr><td>' + d.join('</td><td>') + '</td></tr>');
+            }
+            $('#order_info').html(s.join(''));
+        } else { $('#order_info').html('Not found'); }
     });
 }).after('<div id="order_info"></div>');
 
@@ -342,7 +414,7 @@ $('#status').focus(function() {
 
 
 // Datepicker initialisation
-$('#on,#sla').datePicker({startDate:'2000-01-01'}); // input[type=date] doesn't work in IE6/7
+$('[type="date"]').datePicker({startDate:'2000-01-01'}); // input[type=date] doesn't work in IE6/7
 $('#on').bind('dateSelected', function(e, d) { $('#sla').val(d.addDays(14).asString()); }).dpSetSelected((new Date()).asString());
 $('.dp-choose-date').attr('tabIndex', -1);
 

@@ -7,8 +7,10 @@ CSV = {
     },
 
     date: function (d) {
-        d = new Date(d);
-        return d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        if (d) {
+            d = new Date(d || 0);
+            return d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        } else { return ''; }
     },
 
     time: function (d) {
