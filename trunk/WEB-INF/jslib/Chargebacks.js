@@ -13,10 +13,13 @@ var chargebacks_schema = {
     'sla':          { type: 'integer' },
 
     'order':        { type: 'string' },
+    'ordered':      { type: 'integer' },
     'ref':          { type: 'string' },
     'value':        { type: 'integer' },
     'seller':       { type: 'string' },
     'chargeseller': { type: 'string' },
+    'disputed':     { type: 'string' },
+    'why':          { type: 'string' },
 
     'status':       { type: 'string' },
     'dash':         { type: 'string' },
@@ -67,16 +70,32 @@ app = function(env){
         return { body: '<h1>Uploaded</h1><p>Go back to the <a href="/view.html?orderby=-time">view</a> or <a href="/form.html">create a new form</a></p>' };
     }
 
-    // /order/id returns JSON order data
+    // /order?something=id,date_in_seconds,amount_in_pence returns JSON order data
     // requires (cygwin/bin/) grep.exe, cygiconv-2.dll, cygintl-8.dll, cygwin1.dll
     else if (url.match(/^\/order\??/)) {
         // Get the search parameter from the request
-        var search = env.QUERY_STRING.split('=')[1];
+        var search  = env.QUERY_STRING.split('=')[1].split(','),
+            orderid = search[0] || '[^,]*',
+            amount  = search[2] || '[^,]*';
+
+        // Extract the date
+        if (+search[1]) {
+            var d = new Date(+search[1]),
+                date = ['0?' + d.getDate(), '0?' + (d.getMonth() + 1), d.getFullYear()].join('[^0-9]+') + '[^,]*',
+                approxdate = ['[0-9]*', '0?' + (d.getMonth() + 1), d.getFullYear()].join('[^0-9]+') + '[^,]*';
+        } else {
+            var date = '[^,]*',
+                approxdate = date;
+        }
+
 
         // Ensure that it's alphanumeric, and search for matches in the orders
-        if (search.match(/[^A-Za-z0-9]/)) { return error; }
         var MATCH_COUNT = 10;
-        var orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' "^' + search + '," order/order*');
+        var                   orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + ',' + date + ',' + amount + '" order/order*');
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + ',' + approxdate + ',' + amount + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + ',' + approxdate + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + '," order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' "'  + orderid + '" order/order*'); }
 
         // Convert result into array of arrays
         for (var result = [], i=0, order; order=orders[i]; i++) {
@@ -89,30 +108,34 @@ app = function(env){
             body: JSON.stringify(result)
         };
     }
-    
+
     // /csv/
     else if (url.match(/^\/csv\//)) {
         var match = url.match(/^\/csv(\/.*)$/);
         var result = load(match[1]),
-            out = ['Department,Card,Amount,Chargeback date,Bank,Chargeback type,Case reference,Bank reference,Debit Credit,SLA,Order ID,Order Reference,Order value,Seller ID,Charge seller,Status,DASH,Refund,Proof of Delivery,Cover letter,Reason,Notes,Last updated,User ID'];
+            out = ['ID,Department,Card,Amount,Chargeback date,Bank,Chargeback type,Case reference,Bank reference,Debit Credit,SLA,Order ID,Order date,Order Reference,Order value,Seller ID,Charge seller,Seller disputed,Bank reason code,Status,DASH,Refund,Proof of Delivery,Cover letter,Reason,Notes,Last updated,User ID'];
 
         for (var i=0, e; e=result[i]; i++) {
             var row = [
+                CSV.escape(e.id.replace('Chargeback/', '')),
                 CSV.escape(e.dept),
                 CSV.escape(e.card),
                 CSV.escape(e.amt / 100.0),
-                CSV.escape(CSV.date(e.on)),
+                CSV.date(e.on),
                 CSV.escape(e.bank),
                 CSV.escape(e.type),
                 CSV.escape(e.caseref),
                 CSV.escape(e.bankref),
                 CSV.escape(e.debit_credit),
-                CSV.escape(CSV.date(e.sla)),
+                CSV.date(e.sla),
                 CSV.escape(e.order),
+                CSV.date(e.ordered),
                 CSV.escape(e.ref),
                 CSV.escape(e.value / 100.0),
                 CSV.escape(e.seller),
                 CSV.escape(e.chargeseller),
+                CSV.escape(e.disputed),
+                CSV.escape(e.why),
                 CSV.escape(e.status),
                 CSV.escape(e.dash),
                 CSV.escape(e.refund),
@@ -120,7 +143,7 @@ app = function(env){
                 CSV.escape(e.cover),
                 CSV.escape(e.reason),
                 CSV.escape(e.notes),
-                CSV.escape(CSV.date(e.time)),
+                CSV.date(e.time),
                 CSV.escape(e.user)
             ];
             out.push(row.join(','));
@@ -159,8 +182,8 @@ exec = function (cmd) {
 
 keys = function(o, match, nomatch) {
     var k = [];
-    for (var i in o) { 
-        if (o.hasOwnProperty(i) && (match ? i.match(match) : 1) && (nomatch ? !i.match(nomatch) : 1)) { 
+    for (var i in o) {
+        if (o.hasOwnProperty(i) && (match ? i.match(match) : 1) && (nomatch ? !i.match(nomatch) : 1)) {
             k.push(i);
         }
     }

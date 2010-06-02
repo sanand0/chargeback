@@ -46,7 +46,7 @@ input.error, select.error, textarea.error { background-color: #faa; }
 q { color: #888; font-size:9px; line-spacing:1; display:none; }
 
 #order_info table { margin: 0; font-size: 90%; }
-#order_info td { border: none; padding: 0; text-align: center; }
+#order_info td { padding: 0 2px; text-align: right; }
 
 .view .highlight { cursor: pointer; }
 .view #id { width: 2em; }
