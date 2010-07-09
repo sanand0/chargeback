@@ -414,7 +414,7 @@ $('#status').focus(function() {
 
 
 // Datepicker initialisation
-$('[type="date"]').datePicker({startDate:'2000-01-01'}); // input[type=date] doesn't work in IE6/7
+$('#on,#sla,#ordered').datePicker({startDate:'2000-01-01'});
 $('#on').bind('dateSelected', function(e, d) { $('#sla').val(d.addDays(14).asString()); }).dpSetSelected((new Date()).asString());
 $('.dp-choose-date').attr('tabIndex', -1);
 
