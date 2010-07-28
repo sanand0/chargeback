@@ -1,5 +1,3 @@
-Class({ id: 'Chargeback', properties: chargebacks_schema});
-
 var chargebacks_schema = {
     'dept':         { type: 'string' },
     'card':         { type: 'string' },
@@ -33,6 +31,9 @@ var chargebacks_schema = {
     'user':         { type: 'string' },
     'hist':         { type: 'array' }
 };
+
+Class({ id: 'Chargeback', properties: chargebacks_schema});
+
 
 // Code begins here
 
@@ -76,7 +77,7 @@ app = function(env){
         // Get the search parameter from the request
         var search  = env.QUERY_STRING.split('=')[1].split(','),
             orderid = search[0] || '[^,]*',
-            amount  = search[2] || '[^,]*';
+            amount  = search[2] ? search[2].replace(/(..)$/, '.$1') : '[^,]*';
 
         // Extract the date
         if (+search[1]) {
@@ -90,15 +91,19 @@ app = function(env){
 
 
         // Ensure that it's alphanumeric, and search for matches in the orders
-        var MATCH_COUNT = 10;
-        var                   orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + ',' + date + ',' + amount + '" order/order*');
-        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + ',' + approxdate + ',' + amount + '" order/order*'); }
-        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + ',' + approxdate + '" order/order*'); }
-        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",' + orderid + '," order/order*'); }
-        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' "'  + orderid + '" order/order*'); }
+        var MATCH_COUNT = 10, orders = [], result = [];
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + date       + ',' + amount + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + approxdate + ',' + amount + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + approxdate + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + '," order/order*'); }
+
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*,' + date       + ',' + amount + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*,' + approxdate + ',' + amount + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*,' + approxdate + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*," order/order*'); }
 
         // Convert result into array of arrays
-        for (var result = [], i=0, order; order=orders[i]; i++) {
+        for (var i=0, order; order=orders[i]; i++) {
             result.push(order.split(','));
         }
 
@@ -154,11 +159,11 @@ app = function(env){
             body: out.join('\n')
         };
     }
-};
+}
 
 // YYYY-MM-DD-hh-mm-ss
 dateformat = function(d){
- function pad(n) {return n<10 ? '0'+n : n;};
+ function pad(n) {return n<10 ? '0'+n : n;}
  return d.getUTCFullYear()+'-'
       + pad(d.getUTCMonth()+1)+'-'
       + pad(d.getUTCDate())+'-'
