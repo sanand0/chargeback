@@ -51,7 +51,7 @@ function fields2data(f) {
         'sla':      Date.fromString(f.sla).getTime() || (Date.fromString(f.on).getTime() || now) + 86400 * 14 * 1000,
 
         'order':    f.order || '',
-        'ordered':  Date.fromString(f.ordered).getTime() || 0,
+        'ordered':  f.ordered ? Date.fromString(f.ordered).getTime() : 0,
         'ref':      f.ref || '',
         'value':    Math.round(+(f.value || 0) * 100),
         'seller':   f.seller || '',
