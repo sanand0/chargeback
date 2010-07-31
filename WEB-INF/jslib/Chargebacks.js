@@ -82,8 +82,8 @@ app = function(env){
         // Extract the date
         if (+search[1]) {
             var d = new Date(+search[1]),
-                date = ['0?' + d.getDate(), '0?' + (d.getMonth() + 1), d.getFullYear()].join('[^0-9]+') + '[^,]*',
-                approxdate = ['[0-9]*', '0?' + (d.getMonth() + 1), d.getFullYear()].join('[^0-9]+') + '[^,]*';
+                date = ['0*' + d.getDate(), '0*' + (d.getMonth() + 1), d.getFullYear()].join('[^0-9]*') + '[^,]*',
+                approxdate = ['[0-9]*', '0*' + (d.getMonth() + 1), d.getFullYear()].join('[^0-9]*') + '[^,]*';
         } else {
             var date = '[^,]*',
                 approxdate = date;
@@ -93,13 +93,12 @@ app = function(env){
         // Ensure that it's alphanumeric, and search for matches in the orders
         var MATCH_COUNT = 10, orders = [], result = [];
         if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + date       + ',' + amount + '" order/order*'); }
-        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + approxdate + ',' + amount + '" order/order*'); }
-        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + approxdate + '" order/order*'); }
-        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + '," order/order*'); }
-
         if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*,' + date       + ',' + amount + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + approxdate + ',' + amount + '" order/order*'); }
         if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*,' + approxdate + ',' + amount + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + ','      + approxdate + '" order/order*'); }
         if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*,' + approxdate + '" order/order*'); }
+        if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",'      + orderid + '," order/order*'); }
         if (!orders.length) { orders = exec('utils/grep.exe -h -m' + MATCH_COUNT + ' ",[^,]*' + orderid + '[^,]*," order/order*'); }
 
         // Convert result into array of arrays
