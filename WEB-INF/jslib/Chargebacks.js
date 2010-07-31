@@ -77,7 +77,7 @@ app = function(env){
         // Get the search parameter from the request
         var search  = env.QUERY_STRING.split('=')[1].split(','),
             orderid = search[0] || '[^,]*',
-            amount  = search[2] ? search[2].replace(/(..)$/, '.$1') : '[^,]*';
+            amount  = search[2] ? search[2].replace(/(..)$/, '.$1').replace(/0+$/, '') : '[^,]*';
 
         // Extract the date
         if (+search[1]) {
